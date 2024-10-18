@@ -1,0 +1,15 @@
+{
+  "id": "High_Return_Temp",
+  "displayName": "Hög retur temperatur",
+  "system": "Hot_Water_System",
+  "inputs": [
+    "Leaving_Hot_Water_Temperature_Sensor",
+    "Outside_Air_Temperature_Sensor"
+  ],
+  "parameters": [
+    "Leaving_Hot_Water_Temperature_Parameter*",
+    "Outside_Air_Temperature_Parameter*"
+  ],
+  "outputs": ["Leaving_Water_Temperature_Alarm"],
+  "description": "Funktionen övervakar returtemperaturen i förhållande till utomhustemperaturen. Om tröskelvärdena överskrids i mer än 20 minuter ändras output från 0 till 1."
+}

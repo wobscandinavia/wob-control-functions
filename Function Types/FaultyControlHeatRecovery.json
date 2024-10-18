@@ -1,0 +1,9 @@
+{
+  "id": "Faulty_Control_Heat_Recovery",
+  "displayName": "Ej korrekt reglering värmeåtervinning",
+  "system": "Ventilation_Air_System",
+  "inputs": ["Fan_On_Off_Status", "Heating_Command", "Preheat_Command"],
+  "parameters": ["Fan_On_Duration*"],
+  "outputs": ["Faulty_Control_Alarm*"],
+  "description": "Funktionen indikerar problem med reglersekvensen för värme i luftbehandlingsaggregat."
+}

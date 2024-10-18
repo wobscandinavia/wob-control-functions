@@ -1,0 +1,13 @@
+{
+  "id": "Missing_Static_Pressure",
+  "displayName": "Uteblivet tryck",
+  "system": "Ventilation_Air_System",
+  "inputs": [
+    "Exhaust_Air_Static_Pressure_Sensor",
+    "Supply_Air_Static_Pressure_Sensor",
+    "Fan_On_Off_Status"
+  ],
+  "parameters": ["Fan_On_Duration*"],
+  "outputs": ["Faulty_Control_Alarm*"],
+  "description": "Funktionen indikerar uteblivit tryck i tilluft eller frånluft."
+}

@@ -1,0 +1,88 @@
+ 
+WITH ReturTempStream AS (
+    SELECT
+        CAST(telemetry.valueTimeStamp AS datetime) AS time,
+        telemetry.uuid AS uuid_returtemp,
+        CAST(telemetry.value AS float) AS value_returtemp,
+        telemetry.sourceLabel AS Label_returntemperature,
+        ref.ReturTempVP_limit,
+        ref.fastighet,
+        ref.system,
+        ref.Utetemp_limit,
+        ref.uuid_utetemp
+    FROM
+        telemetry
+    JOIN
+        rules AS ref
+    ON
+        telemetry.uuid = ref.uuid_returtemp
+),
+UteTempStream AS (
+    SELECT
+        CAST(telemetry.valueTimeStamp AS datetime) AS time,
+        telemetry.uuid AS uuid_utetemp,
+        CAST(telemetry.value AS float) AS value_utetemp,
+        telemetry.sourceLabel AS Label_outsidetemperature,
+        ref.Utetemp_limit,
+        ref.fastighet,
+        ref.system
+    FROM
+        telemetry
+    JOIN
+        rules AS ref
+    ON
+        telemetry.uuid = ref.uuid_utetemp
+),
+AvgTempStream AS (
+    SELECT
+        System.Timestamp AS time,  -- Använd systemets tidsstämpel för tumlingsfönstret.
+        ReturTempStream.fastighet,
+        ReturTempStream.system,
+        AVG(ReturTempStream.value_returtemp) AS value_returtemp,
+        AVG(UteTempStream.value_utetemp) AS value_utetemp,
+        ReturTempStream.ReturTempVP_limit,
+        UteTempStream.Utetemp_limit,
+        ReturTempStream.uuid_returtemp,
+        UteTempStream.uuid_utetemp,
+        ReturTempStream.Label_returntemperature,
+        UteTempStream.Label_outsidetemperature
+    FROM
+        ReturTempStream
+    JOIN
+        UteTempStream
+    ON
+        ReturTempStream.fastighet = UteTempStream.fastighet
+        AND ReturTempStream.system = UteTempStream.system
+        AND DATEDIFF(second, ReturTempStream, UteTempStream) BETWEEN -30 AND 30
+    GROUP BY
+        TUMBLINGWINDOW(minute, 1),
+        ReturTempStream.fastighet,
+        ReturTempStream.system,
+        ReturTempStream.ReturTempVP_limit,
+        UteTempStream.Utetemp_limit,
+        ReturTempStream.uuid_returtemp,
+        UteTempStream.uuid_utetemp,
+        ReturTempStream.Label_returntemperature,
+        UteTempStream.Label_outsidetemperature
+)
+ 
+SELECT
+    time,  -- Här används systemets tidsstämpel.
+    fastighet,
+    system,
+    Label_returntemperature,
+    uuid_returtemp,
+    ReturTempVP_limit,
+    value_returtemp,
+    uuid_utetemp,
+    value_utetemp,
+    Label_outsidetemperature,
+    Utetemp_limit,
+    'HighReturnTemperatureDistrictHeating' AS FunctionType,
+    CASE
+        WHEN value_returtemp > ReturTempVP_limit AND value_utetemp < Utetemp_limit THEN 'true'
+        ELSE 'false'
+    END AS HighReturnTemperature_DistrictHeating
+FROM
+    AvgTempStream
+ 

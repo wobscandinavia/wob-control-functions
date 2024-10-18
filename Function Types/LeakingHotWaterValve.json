@@ -1,0 +1,16 @@
+{
+  "id": "Leaking_Hot_Water_Valve",
+  "displayName": "Läckande värmeventil",
+  "system": "Ventilation_Air_System",
+  "inputs": [
+    "Leaving_Hot_Water_Temperature_Sensor",
+    "Heating_Command",
+    "Fan_On_Off_Status"
+  ],
+  "parameters": [
+    "Fan_Off_Duration*",
+    "Leaving_Hot_Water_Temperature_Parameter*"
+  ],
+  "outputs": ["Leaking_Valve_Alarm*"],
+  "description": "Funktionen indikerar att det är flöde genom ventilen även om ställdonet indikera stängd."
+}
